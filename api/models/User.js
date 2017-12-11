@@ -16,71 +16,6 @@ module.exports = {
       required: true,
       unique: true
     },
-
-    BTCMainbalance: {
-      type: 'float',
-      defaultsTo: 0
-    },
-    BTCbalance: {
-      type: 'float',
-      defaultsTo: 0
-    },
-    FreezedBTCbalance: {
-      type: 'float',
-      defaultsTo: 0
-    },
-    userBTCAddress: {
-      type: 'string'
-    },
-
-    BCHMainbalance: {
-      type: 'float',
-      defaultsTo: 0
-    },
-    BCHbalance: {
-      type: 'float',
-      defaultsTo: 0
-    },
-    FreezedBCHbalance: {
-      type: 'float',
-      defaultsTo: 0
-    },
-    userBCHAddress: {
-      type: 'string'
-    },
-
-    GDSMainbalance: {
-      type: 'float',
-      defaultsTo: 0
-    },
-    GDSbalance: {
-      type: 'float',
-      defaultsTo: 0
-    },
-    FreezedGDSbalance: {
-      type: 'float',
-      defaultsTo: 0
-    },
-    userGDSAddress: {
-      type: 'string'
-    },
-
-    PYYMainbalance: {
-      type: 'float',
-      defaultsTo: 0
-    },
-    PYYbalance: {
-      type: 'float',
-      defaultsTo: 0
-    },
-    FreezedPYYbalance: {
-      type: 'float',
-      defaultsTo: 0
-    },
-    userPYYAddress: {
-      type: 'string'
-    },
-
     encryptedPassword: {
       type: 'string'
     },
@@ -100,52 +35,13 @@ module.exports = {
       type: 'boolean',
       defaultsTo: false
     },
-    tfastatus: {
-      type: "boolean",
-      defaultsTo: false
-    },
-    googlesecreatekey: {
-      type: 'string'
-    },
     isAdmin: {
       type: 'boolean',
       defaultsTo: false
     },
-    //Tradebalanceorder
-    tradebalanceorderDetails: {
-      collection: 'tradebalanceorder',
-      via: 'tradebalanceorderowner'
-    },
-    //BCH
-    bidsBCH: {
-      collection: 'bidBCH',
-      via: 'bidownerBCH'
-    },
-    asksBCH: {
-      collection: 'askBCH',
-      via: 'askownerBCH'
-    },
-    //GDS
-    bidsGDS: {
-      collection: 'bidGDS',
-      via: 'bidownerGDS'
-    },
-    asksGDS: {
-      collection: 'askGDS',
-      via: 'askownerGDS'
-    },
-    //PYY
-    bidsPYY: {
-      collection: 'bidPYY',
-      via: 'bidownerPYY'
-    },
-    asksPYY: {
-      collection: 'askPYY',
-      via: 'askownerPYY'
-    },
-    loginHistory: {
-      collection: 'LoginHistory',
-      via: 'loginowner'
+    isINRWAddress: {
+      type: 'boolean',
+      defaultsTo: false
     },
     toJSON: function() {
       var obj = this.toObject();
