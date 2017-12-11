@@ -91,12 +91,12 @@ module.exports.company = {
   clientNZDWpass: 'test123',
   txFeeNZDW: 0.0008,
 
-  //JPYD Server details
-  clientJPYDhost: '162.213.252.66',
-  clientJPYDport: 18336,
-  clientJPYDuser: 'test',
-  clientJPYDpass: 'test123',
-  txFeeJPYD: 0.0008,
+  //JPYW Server details
+  clientJPYWhost: '162.213.252.66',
+  clientJPYWport: 18336,
+  clientJPYWuser: 'test',
+  clientJPYWpass: 'test123',
+  txFeeJPYW: 0.0008,
 
   //SEKW Server details
   clientSEKWhost: '162.213.252.66',

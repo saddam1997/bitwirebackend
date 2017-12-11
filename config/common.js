@@ -2,10 +2,10 @@ module.exports.common = {
 
 
 
-  supportEmailId: 'no-reply@zenithnex.com', //Support Email Id to send mail signup and login and forgot password
-  supportEmailIdpass: 'zenithnex@123', //Support Email Id passoword
+  supportEmailId: 'bitwire.io@gmail.com', //Support Email Id to send mail signup and login and forgot password
+  supportEmailIdpass: 'bitwire@io', //Support Email Id passoword
 
-  supportEmailIdService: 'zoho',
+  supportEmailIdService: 'gmail',
   projectURL: 'http://192.168.0.100:1338',
   txFeeBCHWithdrawSuccess: 0.0001,
   txFeeBTCWithdrawSuccess: 0.0001,
@@ -24,7 +24,7 @@ module.exports.common = {
   companyCZKWAccount: "admin@gmail.com",
   companyILSWAccount: "admin@gmail.com",
   companyNZDWAccount: "admin@gmail.com",
-  companyJPYDAccount: "admin@gmail.com",
+  companyJPYWAccount: "admin@gmail.com",
   companySEKWAccount: "admin@gmail.com",
   companyAUDWAccount: "admin@gmail.com",
 }

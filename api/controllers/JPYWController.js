@@ -1,21 +1,21 @@
 /**
- * JPYDController
+ * JPYWController
  *
- * @description :: Server-side logic for managing JPYDS
+ * @description :: Server-side logic for managing JPYWS
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
 var BigNumber = require('bignumber.js');
 
-var bitcoinJPYD = require('bitcoin');
-var clientJPYD = new bitcoinJPYD.Client({
-  host: sails.config.company.clientJPYDhost,
-  port: sails.config.company.clientJPYDport,
-  user: sails.config.company.clientJPYDuser,
-  pass: sails.config.company.clientJPYDpass
+var bitcoinJPYW = require('bitcoin');
+var clientJPYW = new bitcoinJPYW.Client({
+  host: sails.config.company.clientJPYWhost,
+  port: sails.config.company.clientJPYWport,
+  user: sails.config.company.clientJPYWuser,
+  pass: sails.config.company.clientJPYWpass
 });
 
 module.exports = {
-  getNewJPYDAddress: function(req, res) {
+  getNewJPYWAddress: function(req, res) {
     var userMailId = req.body.userMailId;
     if (!userMailId) {
       return res.json({
@@ -38,20 +38,20 @@ module.exports = {
           statusCode: 401
         });
       }
-      clientJPYD.cmd('getnewaddress', userMailId, function(err, address) {
+      clientJPYW.cmd('getnewaddress', userMailId, function(err, address) {
         if (err)
           return res.json({
-            "message": "Failed to get new address from JPYD server",
+            "message": "Failed to get new address from JPYW server",
             statusCode: 400
           });
 
-        console.log('JPYD address generated', address);
+        console.log('JPYW address generated', address);
 
-        if (!user.isJPYDAddress) {
+        if (!user.isJPYWAddress) {
           User.update({
             email: userMailId
           }, {
-            isJPYDAddress: true
+            isJPYWAddress: true
           }).exec(function afterwards(err, updated) {
             if (err) {
               return res.json({
@@ -72,7 +72,7 @@ module.exports = {
       });
     });
   },
-  getJPYDAddressByAccount: function(req, res) {
+  getJPYWAddressByAccount: function(req, res) {
     var userMailId = req.body.userMailId;
     if (!userMailId)
       return res.json({
@@ -94,14 +94,14 @@ module.exports = {
           statusCode: 401
         });
       }
-      clientJPYD.cmd('getaddressesbyaccount', userMailId, function(err, listaddress) {
+      clientJPYW.cmd('getaddressesbyaccount', userMailId, function(err, listaddress) {
         if (err) {
           return res.json({
-            "message": "Failed to get new address from JPYD server",
+            "message": "Failed to get new address from JPYW server",
             statusCode: 400
           });
         }
-        console.log('JPYD address generated', listaddress);
+        console.log('JPYW address generated', listaddress);
         return res.json({
           listaddress: listaddress,
           statusCode: 200
@@ -109,15 +109,15 @@ module.exports = {
       });
     });
   },
-  sendJPYD: function(req, res, next) {
-    console.log("Enter into sendJPYD");
+  sendJPYW: function(req, res, next) {
+    console.log("Enter into sendJPYW");
     var userEmailAddress = req.body.userMailId;
-    var userJPYDAmountToSend = parseFloat(req.body.amount);
-    var userReceiverJPYDAddress = req.body.recieverJPYDCoinAddress;
+    var userJPYWAmountToSend = parseFloat(req.body.amount);
+    var userReceiverJPYWAddress = req.body.recieverJPYWCoinAddress;
     var userSpendingPassword = req.body.spendingPassword;
-    var miniJPYDAmountSentByUser = 0.001;
-    miniJPYDAmountSentByUser = parseFloat(miniJPYDAmountSentByUser);
-    if (!userEmailAddress || !userJPYDAmountToSend || !userReceiverJPYDAddress ||
+    var miniJPYWAmountSentByUser = 0.001;
+    miniJPYWAmountSentByUser = parseFloat(miniJPYWAmountSentByUser);
+    if (!userEmailAddress || !userJPYWAmountToSend || !userReceiverJPYWAddress ||
       !userSpendingPassword) {
       console.log("Can't be empty!!! by user ");
       return res.json({
@@ -125,10 +125,10 @@ module.exports = {
         statusCode: 400
       });
     }
-    if (userJPYDAmountToSend < miniJPYDAmountSentByUser) {
-      console.log("Sending amount is not less then " + miniJPYDAmountSentByUser);
+    if (userJPYWAmountToSend < miniJPYWAmountSentByUser) {
+      console.log("Sending amount is not less then " + miniJPYWAmountSentByUser);
       return res.json({
-        "message": "Sending amount JPYD is not less then " + miniJPYDAmountSentByUser,
+        "message": "Sending amount JPYW is not less then " + miniJPYWAmountSentByUser,
         statusCode: 400
       });
     }
@@ -167,26 +167,26 @@ module.exports = {
               console.log("Valid spending password !!!");
               console.log("Spending password is valid!!!");
               var minimumNumberOfConfirmation = 1;
-              //var netamountToSend = (parseFloat(userJPYDAmountToSend) - parseFloat(sails.config.company.txFeeJPYD));
-              var transactionFeeOfJPYD = new BigNumber(sails.config.company.txFeeJPYD);
-              var netamountToSend = new BigNumber(userJPYDAmountToSend);
-              netamountToSend = netamountToSend.minus(transactionFeeOfJPYD);
+              //var netamountToSend = (parseFloat(userJPYWAmountToSend) - parseFloat(sails.config.company.txFeeJPYW));
+              var transactionFeeOfJPYW = new BigNumber(sails.config.company.txFeeJPYW);
+              var netamountToSend = new BigNumber(userJPYWAmountToSend);
+              netamountToSend = netamountToSend.minus(transactionFeeOfJPYW);
 
-              console.log("clientJPYD netamountToSend :: " + netamountToSend);
-              clientJPYD.cmd('sendfrom', userEmailAddress, userReceiverJPYDAddress, parseFloat(netamountToSend),
-                minimumNumberOfConfirmation, userReceiverJPYDAddress, userReceiverJPYDAddress,
+              console.log("clientJPYW netamountToSend :: " + netamountToSend);
+              clientJPYW.cmd('sendfrom', userEmailAddress, userReceiverJPYWAddress, parseFloat(netamountToSend),
+                minimumNumberOfConfirmation, userReceiverJPYWAddress, userReceiverJPYWAddress,
                 function(err, TransactionDetails, resHeaders) {
                   if (err) {
-                    console.log("Error from sendFromJPYDAccount:: " + err);
+                    console.log("Error from sendFromJPYWAccount:: " + err);
                     if (err.code && err.code == "ECONNREFUSED") {
                       return res.json({
-                        "message": "JPYD Server Refuse to connect App",
+                        "message": "JPYW Server Refuse to connect App",
                         statusCode: 400
                       });
                     }
                     if (err.code && err.code == -5) {
                       return res.json({
-                        "message": "Invalid JPYD Address",
+                        "message": "Invalid JPYW Address",
                         statusCode: 400
                       });
                     }
@@ -198,43 +198,43 @@ module.exports = {
                     }
                     if (err.code && err.code < 0) {
                       return res.json({
-                        "message": "Problem in JPYD server",
+                        "message": "Problem in JPYW server",
                         statusCode: 400
                       });
                     }
                     return res.json({
-                      "message": "Error in JPYD Server",
+                      "message": "Error in JPYW Server",
                       statusCode: 400
                     });
                   }
                   console.log('TransactionDetails :', TransactionDetails);
 
-                  clientJPYD.cmd('gettransaction', TransactionDetails,
+                  clientJPYW.cmd('gettransaction', TransactionDetails,
                     function(err, txDetails, resHeaders) {
                       if (err) {
-                        console.log("Error from sendFromJPYDAccount:: " + err);
+                        console.log("Error from sendFromJPYWAccount:: " + err);
                         return res.json({
-                          "message": "Error in JPYD Server",
+                          "message": "Error in JPYW Server",
                           statusCode: 400
                         });
                       }
                       console.log('txDetails :' + txDetails);
                       var txFeeFromNode = Math.abs(txDetails.fee);
-                      var amountToMoveInCompanyAccount = transactionFeeOfJPYD.minus(txFeeFromNode);
+                      var amountToMoveInCompanyAccount = transactionFeeOfJPYW.minus(txFeeFromNode);
                       console.log("Move in company Account :: " + amountToMoveInCompanyAccount);
-                      clientJPYD.cmd('move', userEmailAddress, sails.config.common.companyJPYDAccount, amountToMoveInCompanyAccount,
+                      clientJPYW.cmd('move', userEmailAddress, sails.config.common.companyJPYWAccount, amountToMoveInCompanyAccount,
                         function(err, moveCompanyDetails, resHeaders) {
                           if (err) {
-                            console.log("Error from sendFromJPYDAccount:: " + err);
+                            console.log("Error from sendFromJPYWAccount:: " + err);
                             if (err.code && err.code == "ECONNREFUSED") {
                               return res.json({
-                                "message": "JPYD Server Refuse to connect App",
+                                "message": "JPYW Server Refuse to connect App",
                                 statusCode: 400
                               });
                             }
                             if (err.code && err.code == -5) {
                               return res.json({
-                                "message": "Invalid JPYD Address",
+                                "message": "Invalid JPYW Address",
                                 statusCode: 400
                               });
                             }
@@ -246,12 +246,12 @@ module.exports = {
                             }
                             if (err.code && err.code < 0) {
                               return res.json({
-                                "message": "Problem in JPYD server",
+                                "message": "Problem in JPYW server",
                                 statusCode: 400
                               });
                             }
                             return res.json({
-                              "message": "Error in JPYD Server",
+                              "message": "Error in JPYW Server",
                               statusCode: 400
                             });
                           }
@@ -269,8 +269,8 @@ module.exports = {
       }
     });
   },
-  getTxsListJPYD: function(req, res, next) {
-    console.log("Enter into getTxsListJPYD::: ");
+  getTxsListJPYW: function(req, res, next) {
+    console.log("Enter into getTxsListJPYW::: ");
     var userMailId = req.body.userMailId;
     if (!userMailId) {
       console.log("Can't be empty!!! by user.....");
@@ -296,26 +296,26 @@ module.exports = {
           statusCode: 401
         });
       }
-      clientJPYD.cmd(
+      clientJPYW.cmd(
         'listtransactions',
         userMailId,
         function(err, transactionList) {
           if (err) {
-            console.log("Error from sendFromJPYDAccount:: ");
+            console.log("Error from sendFromJPYWAccount:: ");
             if (err.code && err.code == "ECONNREFUSED") {
               return res.json({
-                "message": "JPYD Server Refuse to connect App",
+                "message": "JPYW Server Refuse to connect App",
                 statusCode: 400
               });
             }
             if (err.code && err.code < 0) {
               return res.json({
-                "message": "Problem in JPYD server",
+                "message": "Problem in JPYW server",
                 statusCode: 400
               });
             }
             return res.json({
-              "message": "Error in JPYD Server",
+              "message": "Error in JPYW Server",
               statusCode: 400
             });
           }
@@ -327,8 +327,8 @@ module.exports = {
         });
     });
   },
-  getBalJPYD: function(req, res, next) {
-    console.log("Enter into getBalJPYD::: ");
+  getBalJPYW: function(req, res, next) {
+    console.log("Enter into getBalJPYW::: ");
     var userMailId = req.body.userMailId;
     if (!userMailId) {
       console.log("Can't be empty!!! by user.....");
@@ -353,31 +353,31 @@ module.exports = {
         });
       }
       console.log("Valid User :: " + JSON.stringify(user));
-      clientJPYD.cmd(
+      clientJPYW.cmd(
         'getbalance',
         userMailId,
-        function(err, userJPYDMainbalanceFromServer, resHeaders) {
+        function(err, userJPYWMainbalanceFromServer, resHeaders) {
           if (err) {
-            console.log("Error from sendFromJPYDAccount:: ");
+            console.log("Error from sendFromJPYWAccount:: ");
             if (err.code && err.code == "ECONNREFUSED") {
               return res.json({
-                "message": "JPYD Server Refuse to connect App",
+                "message": "JPYW Server Refuse to connect App",
                 statusCode: 400
               });
             }
             if (err.code && err.code < 0) {
               return res.json({
-                "message": "Problem in JPYD server",
+                "message": "Problem in JPYW server",
                 statusCode: 400
               });
             }
             return res.json({
-              "message": "Error in JPYD Server",
+              "message": "Error in JPYW Server",
               statusCode: 400
             });
           }
           return res.json({
-            balanceJPYD: userJPYDMainbalanceFromServer,
+            balanceJPYW: userJPYWMainbalanceFromServer,
             statusCode: 200
           });
         });

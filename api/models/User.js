@@ -91,7 +91,7 @@ module.exports = {
       type: 'boolean',
       defaultsTo: false
     },
-    isJPYDAddress: {
+    isJPYWAddress: {
       type: 'boolean',
       defaultsTo: false
     },
