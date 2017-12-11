@@ -1,21 +1,22 @@
 /**
- * INRWController
+ * GBPWController
  *
- * @description :: Server-side logic for managing INRWS
+ * @description :: Server-side logic for managing GBPWS
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
+
 var BigNumber = require('bignumber.js');
 
-var bitcoinINRW = require('bitcoin');
-var clientINRW = new bitcoinINRW.Client({
-  host: sails.config.company.clientINRWhost,
-  port: sails.config.company.clientINRWport,
-  user: sails.config.company.clientINRWuser,
-  pass: sails.config.company.clientINRWpass
+var bitcoinGBPW = require('bitcoin');
+var clientGBPW = new bitcoinGBPW.Client({
+  host: sails.config.company.clientGBPWhost,
+  port: sails.config.company.clientGBPWport,
+  user: sails.config.company.clientGBPWuser,
+  pass: sails.config.company.clientGBPWpass
 });
 
 module.exports = {
-  getNewINRWAddress: function(req, res) {
+  getNewGBPWAddress: function(req, res) {
     var userMailId = req.body.userMailId;
     if (!userMailId) {
       return res.json({
@@ -38,20 +39,20 @@ module.exports = {
           statusCode: 401
         });
       }
-      clientINRW.cmd('getnewaddress', userMailId, function(err, address) {
+      clientGBPW.cmd('getnewaddress', userMailId, function(err, address) {
         if (err)
           return res.json({
-            "message": "Failed to get new address from INRW server",
+            "message": "Failed to get new address from GBPW server",
             statusCode: 400
           });
 
-        console.log('INRW address generated', address);
+        console.log('GBPW address generated', address);
 
-        if (!user.isINRWAddress) {
+        if (!user.isGBPWAddress) {
           User.update({
             email: userMailId
           }, {
-            isINRWAddress: true
+            isGBPWAddress: true
           }, function(err, response) {
             if (err) {
               return res.json({
@@ -73,7 +74,7 @@ module.exports = {
       });
     });
   },
-  getINRWAddressByAccount: function(req, res) {
+  getGBPWAddressByAccount: function(req, res) {
     var userMailId = req.body.userMailId;
     if (!userMailId)
       return res.json({
@@ -95,14 +96,14 @@ module.exports = {
           statusCode: 401
         });
       }
-      clientINRW.cmd('getaddressesbyaccount', userMailId, function(err, listaddress) {
+      clientGBPW.cmd('getaddressesbyaccount', userMailId, function(err, listaddress) {
         if (err) {
           return res.json({
-            "message": "Failed to get new address from INRW server",
+            "message": "Failed to get new address from GBPW server",
             statusCode: 400
           });
         }
-        console.log('INRW address generated', listaddress);
+        console.log('GBPW address generated', listaddress);
         return res.json({
           listaddress: listaddress,
           statusCode: 200
@@ -110,15 +111,15 @@ module.exports = {
       });
     });
   },
-  sendINRW: function(req, res, next) {
-    console.log("Enter into sendINRW");
+  sendGBPW: function(req, res, next) {
+    console.log("Enter into sendGBPW");
     var userEmailAddress = req.body.userMailId;
-    var userINRWAmountToSend = parseFloat(req.body.amount);
-    var userReceiverINRWAddress = req.body.recieverINRWCoinAddress;
+    var userGBPWAmountToSend = parseFloat(req.body.amount);
+    var userReceiverGBPWAddress = req.body.recieverGBPWCoinAddress;
     var userSpendingPassword = req.body.spendingPassword;
-    var miniINRWAmountSentByUser = 0.001;
-    miniINRWAmountSentByUser = parseFloat(miniINRWAmountSentByUser);
-    if (!userEmailAddress || !userINRWAmountToSend || !userReceiverINRWAddress ||
+    var miniGBPWAmountSentByUser = 0.001;
+    miniGBPWAmountSentByUser = parseFloat(miniGBPWAmountSentByUser);
+    if (!userEmailAddress || !userGBPWAmountToSend || !userReceiverGBPWAddress ||
       !userSpendingPassword) {
       console.log("Can't be empty!!! by user ");
       return res.json({
@@ -126,10 +127,10 @@ module.exports = {
         statusCode: 400
       });
     }
-    if (userINRWAmountToSend < miniINRWAmountSentByUser) {
-      console.log("Sending amount is not less then " + miniINRWAmountSentByUser);
+    if (userGBPWAmountToSend < miniGBPWAmountSentByUser) {
+      console.log("Sending amount is not less then " + miniGBPWAmountSentByUser);
       return res.json({
-        "message": "Sending amount INRW is not less then " + miniINRWAmountSentByUser,
+        "message": "Sending amount GBPW is not less then " + miniGBPWAmountSentByUser,
         statusCode: 400
       });
     }
@@ -168,26 +169,26 @@ module.exports = {
               console.log("Valid spending password !!!");
               console.log("Spending password is valid!!!");
               var minimumNumberOfConfirmation = 1;
-              //var netamountToSend = (parseFloat(userINRWAmountToSend) - parseFloat(sails.config.company.txFeeINRW));
-              var transactionFeeOfINRW = new BigNumber(sails.config.company.txFeeINRW);
-              var netamountToSend = new BigNumber(userINRWAmountToSend);
-              netamountToSend = netamountToSend.minus(transactionFeeOfINRW);
+              //var netamountToSend = (parseFloat(userGBPWAmountToSend) - parseFloat(sails.config.company.txFeeGBPW));
+              var transactionFeeOfGBPW = new BigNumber(sails.config.company.txFeeGBPW);
+              var netamountToSend = new BigNumber(userGBPWAmountToSend);
+              netamountToSend = netamountToSend.minus(transactionFeeOfGBPW);
 
-              console.log("clientINRW netamountToSend :: " + netamountToSend);
-              clientINRW.cmd('sendfrom', userEmailAddress, userReceiverINRWAddress, parseFloat(netamountToSend),
-                minimumNumberOfConfirmation, userReceiverINRWAddress, userReceiverINRWAddress,
+              console.log("clientGBPW netamountToSend :: " + netamountToSend);
+              clientGBPW.cmd('sendfrom', userEmailAddress, userReceiverGBPWAddress, parseFloat(netamountToSend),
+                minimumNumberOfConfirmation, userReceiverGBPWAddress, userReceiverGBPWAddress,
                 function(err, TransactionDetails, resHeaders) {
                   if (err) {
-                    console.log("Error from sendFromINRWAccount:: " + err);
+                    console.log("Error from sendFromGBPWAccount:: " + err);
                     if (err.code && err.code == "ECONNREFUSED") {
                       return res.json({
-                        "message": "INRW Server Refuse to connect App",
+                        "message": "GBPW Server Refuse to connect App",
                         statusCode: 400
                       });
                     }
                     if (err.code && err.code == -5) {
                       return res.json({
-                        "message": "Invalid INRW Address",
+                        "message": "Invalid GBPW Address",
                         statusCode: 400
                       });
                     }
@@ -199,43 +200,43 @@ module.exports = {
                     }
                     if (err.code && err.code < 0) {
                       return res.json({
-                        "message": "Problem in INRW server",
+                        "message": "Problem in GBPW server",
                         statusCode: 400
                       });
                     }
                     return res.json({
-                      "message": "Error in INRW Server",
+                      "message": "Error in GBPW Server",
                       statusCode: 400
                     });
                   }
                   console.log('TransactionDetails :', TransactionDetails);
 
-                  clientINRW.cmd('gettransaction', TransactionDetails,
+                  clientGBPW.cmd('gettransaction', TransactionDetails,
                     function(err, txDetails, resHeaders) {
                       if (err) {
-                        console.log("Error from sendFromINRWAccount:: " + err);
+                        console.log("Error from sendFromGBPWAccount:: " + err);
                         return res.json({
-                          "message": "Error in INRW Server",
+                          "message": "Error in GBPW Server",
                           statusCode: 400
                         });
                       }
                       console.log('txDetails :' + txDetails);
                       var txFeeFromNode = Math.abs(txDetails.fee);
-                      var amountToMoveInCompanyAccount = transactionFeeOfINRW.minus(txFeeFromNode);
+                      var amountToMoveInCompanyAccount = transactionFeeOfGBPW.minus(txFeeFromNode);
                       console.log("Move in company Account :: " + amountToMoveInCompanyAccount);
-                      clientINRW.cmd('move', userEmailAddress, sails.config.common.companyINRWAccount, amountToMoveInCompanyAccount,
+                      clientGBPW.cmd('move', userEmailAddress, sails.config.common.companyGBPWAccount, amountToMoveInCompanyAccount,
                         function(err, moveCompanyDetails, resHeaders) {
                           if (err) {
-                            console.log("Error from sendFromINRWAccount:: " + err);
+                            console.log("Error from sendFromGBPWAccount:: " + err);
                             if (err.code && err.code == "ECONNREFUSED") {
                               return res.json({
-                                "message": "INRW Server Refuse to connect App",
+                                "message": "GBPW Server Refuse to connect App",
                                 statusCode: 400
                               });
                             }
                             if (err.code && err.code == -5) {
                               return res.json({
-                                "message": "Invalid INRW Address",
+                                "message": "Invalid GBPW Address",
                                 statusCode: 400
                               });
                             }
@@ -247,12 +248,12 @@ module.exports = {
                             }
                             if (err.code && err.code < 0) {
                               return res.json({
-                                "message": "Problem in INRW server",
+                                "message": "Problem in GBPW server",
                                 statusCode: 400
                               });
                             }
                             return res.json({
-                              "message": "Error in INRW Server",
+                              "message": "Error in GBPW Server",
                               statusCode: 400
                             });
                           }
@@ -270,8 +271,8 @@ module.exports = {
       }
     });
   },
-  getTxsListINRW: function(req, res, next) {
-    console.log("Enter into getTxsListINRW::: ");
+  getTxsListGBPW: function(req, res, next) {
+    console.log("Enter into getTxsListGBPW::: ");
     var userMailId = req.body.userMailId;
     if (!userMailId) {
       console.log("Can't be empty!!! by user.....");
@@ -297,26 +298,26 @@ module.exports = {
           statusCode: 401
         });
       }
-      clientINRW.cmd(
+      clientGBPW.cmd(
         'listtransactions',
         userMailId,
         function(err, transactionList) {
           if (err) {
-            console.log("Error from sendFromINRWAccount:: ");
+            console.log("Error from sendFromGBPWAccount:: ");
             if (err.code && err.code == "ECONNREFUSED") {
               return res.json({
-                "message": "INRW Server Refuse to connect App",
+                "message": "GBPW Server Refuse to connect App",
                 statusCode: 400
               });
             }
             if (err.code && err.code < 0) {
               return res.json({
-                "message": "Problem in INRW server",
+                "message": "Problem in GBPW server",
                 statusCode: 400
               });
             }
             return res.json({
-              "message": "Error in INRW Server",
+              "message": "Error in GBPW Server",
               statusCode: 400
             });
           }
@@ -328,8 +329,8 @@ module.exports = {
         });
     });
   },
-  getBalINRW: function(req, res, next) {
-    console.log("Enter into getBalINRW::: ");
+  getBalGBPW: function(req, res, next) {
+    console.log("Enter into getBalGBPW::: ");
     var userMailId = req.body.userMailId;
     if (!userMailId) {
       console.log("Can't be empty!!! by user.....");
@@ -354,31 +355,31 @@ module.exports = {
         });
       }
       console.log("Valid User :: " + JSON.stringify(user));
-      clientINRW.cmd(
+      clientGBPW.cmd(
         'getbalance',
         userMailId,
-        function(err, userINRWMainbalanceFromServer, resHeaders) {
+        function(err, userGBPWMainbalanceFromServer, resHeaders) {
           if (err) {
-            console.log("Error from sendFromINRWAccount:: ");
+            console.log("Error from sendFromGBPWAccount:: ");
             if (err.code && err.code == "ECONNREFUSED") {
               return res.json({
-                "message": "INRW Server Refuse to connect App",
+                "message": "GBPW Server Refuse to connect App",
                 statusCode: 400
               });
             }
             if (err.code && err.code < 0) {
               return res.json({
-                "message": "Problem in INRW server",
+                "message": "Problem in GBPW server",
                 statusCode: 400
               });
             }
             return res.json({
-              "message": "Error in INRW Server",
+              "message": "Error in GBPW Server",
               statusCode: 400
             });
           }
           return res.json({
-            balanceINRW: userINRWMainbalanceFromServer,
+            balanceGBPW: userGBPWMainbalanceFromServer,
             statusCode: 200
           });
         });

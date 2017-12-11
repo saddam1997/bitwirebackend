@@ -1,21 +1,22 @@
 /**
- * INRWController
+ * CADWController
  *
- * @description :: Server-side logic for managing INRWS
+ * @description :: Server-side logic for managing CADWS
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
+
 var BigNumber = require('bignumber.js');
 
-var bitcoinINRW = require('bitcoin');
-var clientINRW = new bitcoinINRW.Client({
-  host: sails.config.company.clientINRWhost,
-  port: sails.config.company.clientINRWport,
-  user: sails.config.company.clientINRWuser,
-  pass: sails.config.company.clientINRWpass
+var bitcoinCADW = require('bitcoin');
+var clientCADW = new bitcoinCADW.Client({
+  host: sails.config.company.clientCADWhost,
+  port: sails.config.company.clientCADWport,
+  user: sails.config.company.clientCADWuser,
+  pass: sails.config.company.clientCADWpass
 });
 
 module.exports = {
-  getNewINRWAddress: function(req, res) {
+  getNewCADWAddress: function(req, res) {
     var userMailId = req.body.userMailId;
     if (!userMailId) {
       return res.json({
@@ -38,20 +39,20 @@ module.exports = {
           statusCode: 401
         });
       }
-      clientINRW.cmd('getnewaddress', userMailId, function(err, address) {
+      clientCADW.cmd('getnewaddress', userMailId, function(err, address) {
         if (err)
           return res.json({
-            "message": "Failed to get new address from INRW server",
+            "message": "Failed to get new address from CADW server",
             statusCode: 400
           });
 
-        console.log('INRW address generated', address);
+        console.log('CADW address generated', address);
 
-        if (!user.isINRWAddress) {
+        if (!user.isCADWAddress) {
           User.update({
             email: userMailId
           }, {
-            isINRWAddress: true
+            isCADWAddress: true
           }, function(err, response) {
             if (err) {
               return res.json({
@@ -73,7 +74,7 @@ module.exports = {
       });
     });
   },
-  getINRWAddressByAccount: function(req, res) {
+  getCADWAddressByAccount: function(req, res) {
     var userMailId = req.body.userMailId;
     if (!userMailId)
       return res.json({
@@ -95,14 +96,14 @@ module.exports = {
           statusCode: 401
         });
       }
-      clientINRW.cmd('getaddressesbyaccount', userMailId, function(err, listaddress) {
+      clientCADW.cmd('getaddressesbyaccount', userMailId, function(err, listaddress) {
         if (err) {
           return res.json({
-            "message": "Failed to get new address from INRW server",
+            "message": "Failed to get new address from CADW server",
             statusCode: 400
           });
         }
-        console.log('INRW address generated', listaddress);
+        console.log('CADW address generated', listaddress);
         return res.json({
           listaddress: listaddress,
           statusCode: 200
@@ -110,15 +111,15 @@ module.exports = {
       });
     });
   },
-  sendINRW: function(req, res, next) {
-    console.log("Enter into sendINRW");
+  sendCADW: function(req, res, next) {
+    console.log("Enter into sendCADW");
     var userEmailAddress = req.body.userMailId;
-    var userINRWAmountToSend = parseFloat(req.body.amount);
-    var userReceiverINRWAddress = req.body.recieverINRWCoinAddress;
+    var userCADWAmountToSend = parseFloat(req.body.amount);
+    var userReceiverCADWAddress = req.body.recieverCADWCoinAddress;
     var userSpendingPassword = req.body.spendingPassword;
-    var miniINRWAmountSentByUser = 0.001;
-    miniINRWAmountSentByUser = parseFloat(miniINRWAmountSentByUser);
-    if (!userEmailAddress || !userINRWAmountToSend || !userReceiverINRWAddress ||
+    var miniCADWAmountSentByUser = 0.001;
+    miniCADWAmountSentByUser = parseFloat(miniCADWAmountSentByUser);
+    if (!userEmailAddress || !userCADWAmountToSend || !userReceiverCADWAddress ||
       !userSpendingPassword) {
       console.log("Can't be empty!!! by user ");
       return res.json({
@@ -126,10 +127,10 @@ module.exports = {
         statusCode: 400
       });
     }
-    if (userINRWAmountToSend < miniINRWAmountSentByUser) {
-      console.log("Sending amount is not less then " + miniINRWAmountSentByUser);
+    if (userCADWAmountToSend < miniCADWAmountSentByUser) {
+      console.log("Sending amount is not less then " + miniCADWAmountSentByUser);
       return res.json({
-        "message": "Sending amount INRW is not less then " + miniINRWAmountSentByUser,
+        "message": "Sending amount CADW is not less then " + miniCADWAmountSentByUser,
         statusCode: 400
       });
     }
@@ -168,26 +169,26 @@ module.exports = {
               console.log("Valid spending password !!!");
               console.log("Spending password is valid!!!");
               var minimumNumberOfConfirmation = 1;
-              //var netamountToSend = (parseFloat(userINRWAmountToSend) - parseFloat(sails.config.company.txFeeINRW));
-              var transactionFeeOfINRW = new BigNumber(sails.config.company.txFeeINRW);
-              var netamountToSend = new BigNumber(userINRWAmountToSend);
-              netamountToSend = netamountToSend.minus(transactionFeeOfINRW);
+              //var netamountToSend = (parseFloat(userCADWAmountToSend) - parseFloat(sails.config.company.txFeeCADW));
+              var transactionFeeOfCADW = new BigNumber(sails.config.company.txFeeCADW);
+              var netamountToSend = new BigNumber(userCADWAmountToSend);
+              netamountToSend = netamountToSend.minus(transactionFeeOfCADW);
 
-              console.log("clientINRW netamountToSend :: " + netamountToSend);
-              clientINRW.cmd('sendfrom', userEmailAddress, userReceiverINRWAddress, parseFloat(netamountToSend),
-                minimumNumberOfConfirmation, userReceiverINRWAddress, userReceiverINRWAddress,
+              console.log("clientCADW netamountToSend :: " + netamountToSend);
+              clientCADW.cmd('sendfrom', userEmailAddress, userReceiverCADWAddress, parseFloat(netamountToSend),
+                minimumNumberOfConfirmation, userReceiverCADWAddress, userReceiverCADWAddress,
                 function(err, TransactionDetails, resHeaders) {
                   if (err) {
-                    console.log("Error from sendFromINRWAccount:: " + err);
+                    console.log("Error from sendFromCADWAccount:: " + err);
                     if (err.code && err.code == "ECONNREFUSED") {
                       return res.json({
-                        "message": "INRW Server Refuse to connect App",
+                        "message": "CADW Server Refuse to connect App",
                         statusCode: 400
                       });
                     }
                     if (err.code && err.code == -5) {
                       return res.json({
-                        "message": "Invalid INRW Address",
+                        "message": "Invalid CADW Address",
                         statusCode: 400
                       });
                     }
@@ -199,43 +200,43 @@ module.exports = {
                     }
                     if (err.code && err.code < 0) {
                       return res.json({
-                        "message": "Problem in INRW server",
+                        "message": "Problem in CADW server",
                         statusCode: 400
                       });
                     }
                     return res.json({
-                      "message": "Error in INRW Server",
+                      "message": "Error in CADW Server",
                       statusCode: 400
                     });
                   }
                   console.log('TransactionDetails :', TransactionDetails);
 
-                  clientINRW.cmd('gettransaction', TransactionDetails,
+                  clientCADW.cmd('gettransaction', TransactionDetails,
                     function(err, txDetails, resHeaders) {
                       if (err) {
-                        console.log("Error from sendFromINRWAccount:: " + err);
+                        console.log("Error from sendFromCADWAccount:: " + err);
                         return res.json({
-                          "message": "Error in INRW Server",
+                          "message": "Error in CADW Server",
                           statusCode: 400
                         });
                       }
                       console.log('txDetails :' + txDetails);
                       var txFeeFromNode = Math.abs(txDetails.fee);
-                      var amountToMoveInCompanyAccount = transactionFeeOfINRW.minus(txFeeFromNode);
+                      var amountToMoveInCompanyAccount = transactionFeeOfCADW.minus(txFeeFromNode);
                       console.log("Move in company Account :: " + amountToMoveInCompanyAccount);
-                      clientINRW.cmd('move', userEmailAddress, sails.config.common.companyINRWAccount, amountToMoveInCompanyAccount,
+                      clientCADW.cmd('move', userEmailAddress, sails.config.common.companyCADWAccount, amountToMoveInCompanyAccount,
                         function(err, moveCompanyDetails, resHeaders) {
                           if (err) {
-                            console.log("Error from sendFromINRWAccount:: " + err);
+                            console.log("Error from sendFromCADWAccount:: " + err);
                             if (err.code && err.code == "ECONNREFUSED") {
                               return res.json({
-                                "message": "INRW Server Refuse to connect App",
+                                "message": "CADW Server Refuse to connect App",
                                 statusCode: 400
                               });
                             }
                             if (err.code && err.code == -5) {
                               return res.json({
-                                "message": "Invalid INRW Address",
+                                "message": "Invalid CADW Address",
                                 statusCode: 400
                               });
                             }
@@ -247,12 +248,12 @@ module.exports = {
                             }
                             if (err.code && err.code < 0) {
                               return res.json({
-                                "message": "Problem in INRW server",
+                                "message": "Problem in CADW server",
                                 statusCode: 400
                               });
                             }
                             return res.json({
-                              "message": "Error in INRW Server",
+                              "message": "Error in CADW Server",
                               statusCode: 400
                             });
                           }
@@ -270,8 +271,8 @@ module.exports = {
       }
     });
   },
-  getTxsListINRW: function(req, res, next) {
-    console.log("Enter into getTxsListINRW::: ");
+  getTxsListCADW: function(req, res, next) {
+    console.log("Enter into getTxsListCADW::: ");
     var userMailId = req.body.userMailId;
     if (!userMailId) {
       console.log("Can't be empty!!! by user.....");
@@ -297,26 +298,26 @@ module.exports = {
           statusCode: 401
         });
       }
-      clientINRW.cmd(
+      clientCADW.cmd(
         'listtransactions',
         userMailId,
         function(err, transactionList) {
           if (err) {
-            console.log("Error from sendFromINRWAccount:: ");
+            console.log("Error from sendFromCADWAccount:: ");
             if (err.code && err.code == "ECONNREFUSED") {
               return res.json({
-                "message": "INRW Server Refuse to connect App",
+                "message": "CADW Server Refuse to connect App",
                 statusCode: 400
               });
             }
             if (err.code && err.code < 0) {
               return res.json({
-                "message": "Problem in INRW server",
+                "message": "Problem in CADW server",
                 statusCode: 400
               });
             }
             return res.json({
-              "message": "Error in INRW Server",
+              "message": "Error in CADW Server",
               statusCode: 400
             });
           }
@@ -328,8 +329,8 @@ module.exports = {
         });
     });
   },
-  getBalINRW: function(req, res, next) {
-    console.log("Enter into getBalINRW::: ");
+  getBalCADW: function(req, res, next) {
+    console.log("Enter into getBalCADW::: ");
     var userMailId = req.body.userMailId;
     if (!userMailId) {
       console.log("Can't be empty!!! by user.....");
@@ -354,31 +355,31 @@ module.exports = {
         });
       }
       console.log("Valid User :: " + JSON.stringify(user));
-      clientINRW.cmd(
+      clientCADW.cmd(
         'getbalance',
         userMailId,
-        function(err, userINRWMainbalanceFromServer, resHeaders) {
+        function(err, userCADWMainbalanceFromServer, resHeaders) {
           if (err) {
-            console.log("Error from sendFromINRWAccount:: ");
+            console.log("Error from sendFromCADWAccount:: ");
             if (err.code && err.code == "ECONNREFUSED") {
               return res.json({
-                "message": "INRW Server Refuse to connect App",
+                "message": "CADW Server Refuse to connect App",
                 statusCode: 400
               });
             }
             if (err.code && err.code < 0) {
               return res.json({
-                "message": "Problem in INRW server",
+                "message": "Problem in CADW server",
                 statusCode: 400
               });
             }
             return res.json({
-              "message": "Error in INRW Server",
+              "message": "Error in CADW Server",
               statusCode: 400
             });
           }
           return res.json({
-            balanceINRW: userINRWMainbalanceFromServer,
+            balanceCADW: userCADWMainbalanceFromServer,
             statusCode: 200
           });
         });

@@ -1,21 +1,22 @@
 /**
- * INRWController
+ * PLNWController
  *
- * @description :: Server-side logic for managing INRWS
+ * @description :: Server-side logic for managing PLNWS
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
+
 var BigNumber = require('bignumber.js');
 
-var bitcoinINRW = require('bitcoin');
-var clientINRW = new bitcoinINRW.Client({
-  host: sails.config.company.clientINRWhost,
-  port: sails.config.company.clientINRWport,
-  user: sails.config.company.clientINRWuser,
-  pass: sails.config.company.clientINRWpass
+var bitcoinPLNW = require('bitcoin');
+var clientPLNW = new bitcoinPLNW.Client({
+  host: sails.config.company.clientPLNWhost,
+  port: sails.config.company.clientPLNWport,
+  user: sails.config.company.clientPLNWuser,
+  pass: sails.config.company.clientPLNWpass
 });
 
 module.exports = {
-  getNewINRWAddress: function(req, res) {
+  getNewPLNWAddress: function(req, res) {
     var userMailId = req.body.userMailId;
     if (!userMailId) {
       return res.json({
@@ -38,20 +39,20 @@ module.exports = {
           statusCode: 401
         });
       }
-      clientINRW.cmd('getnewaddress', userMailId, function(err, address) {
+      clientPLNW.cmd('getnewaddress', userMailId, function(err, address) {
         if (err)
           return res.json({
-            "message": "Failed to get new address from INRW server",
+            "message": "Failed to get new address from PLNW server",
             statusCode: 400
           });
 
-        console.log('INRW address generated', address);
+        console.log('PLNW address generated', address);
 
-        if (!user.isINRWAddress) {
+        if (!user.isPLNWAddress) {
           User.update({
             email: userMailId
           }, {
-            isINRWAddress: true
+            isPLNWAddress: true
           }, function(err, response) {
             if (err) {
               return res.json({
@@ -73,7 +74,7 @@ module.exports = {
       });
     });
   },
-  getINRWAddressByAccount: function(req, res) {
+  getPLNWAddressByAccount: function(req, res) {
     var userMailId = req.body.userMailId;
     if (!userMailId)
       return res.json({
@@ -95,14 +96,14 @@ module.exports = {
           statusCode: 401
         });
       }
-      clientINRW.cmd('getaddressesbyaccount', userMailId, function(err, listaddress) {
+      clientPLNW.cmd('getaddressesbyaccount', userMailId, function(err, listaddress) {
         if (err) {
           return res.json({
-            "message": "Failed to get new address from INRW server",
+            "message": "Failed to get new address from PLNW server",
             statusCode: 400
           });
         }
-        console.log('INRW address generated', listaddress);
+        console.log('PLNW address generated', listaddress);
         return res.json({
           listaddress: listaddress,
           statusCode: 200
@@ -110,15 +111,15 @@ module.exports = {
       });
     });
   },
-  sendINRW: function(req, res, next) {
-    console.log("Enter into sendINRW");
+  sendPLNW: function(req, res, next) {
+    console.log("Enter into sendPLNW");
     var userEmailAddress = req.body.userMailId;
-    var userINRWAmountToSend = parseFloat(req.body.amount);
-    var userReceiverINRWAddress = req.body.recieverINRWCoinAddress;
+    var userPLNWAmountToSend = parseFloat(req.body.amount);
+    var userReceiverPLNWAddress = req.body.recieverPLNWCoinAddress;
     var userSpendingPassword = req.body.spendingPassword;
-    var miniINRWAmountSentByUser = 0.001;
-    miniINRWAmountSentByUser = parseFloat(miniINRWAmountSentByUser);
-    if (!userEmailAddress || !userINRWAmountToSend || !userReceiverINRWAddress ||
+    var miniPLNWAmountSentByUser = 0.001;
+    miniPLNWAmountSentByUser = parseFloat(miniPLNWAmountSentByUser);
+    if (!userEmailAddress || !userPLNWAmountToSend || !userReceiverPLNWAddress ||
       !userSpendingPassword) {
       console.log("Can't be empty!!! by user ");
       return res.json({
@@ -126,10 +127,10 @@ module.exports = {
         statusCode: 400
       });
     }
-    if (userINRWAmountToSend < miniINRWAmountSentByUser) {
-      console.log("Sending amount is not less then " + miniINRWAmountSentByUser);
+    if (userPLNWAmountToSend < miniPLNWAmountSentByUser) {
+      console.log("Sending amount is not less then " + miniPLNWAmountSentByUser);
       return res.json({
-        "message": "Sending amount INRW is not less then " + miniINRWAmountSentByUser,
+        "message": "Sending amount PLNW is not less then " + miniPLNWAmountSentByUser,
         statusCode: 400
       });
     }
@@ -168,26 +169,26 @@ module.exports = {
               console.log("Valid spending password !!!");
               console.log("Spending password is valid!!!");
               var minimumNumberOfConfirmation = 1;
-              //var netamountToSend = (parseFloat(userINRWAmountToSend) - parseFloat(sails.config.company.txFeeINRW));
-              var transactionFeeOfINRW = new BigNumber(sails.config.company.txFeeINRW);
-              var netamountToSend = new BigNumber(userINRWAmountToSend);
-              netamountToSend = netamountToSend.minus(transactionFeeOfINRW);
+              //var netamountToSend = (parseFloat(userPLNWAmountToSend) - parseFloat(sails.config.company.txFeePLNW));
+              var transactionFeeOfPLNW = new BigNumber(sails.config.company.txFeePLNW);
+              var netamountToSend = new BigNumber(userPLNWAmountToSend);
+              netamountToSend = netamountToSend.minus(transactionFeeOfPLNW);
 
-              console.log("clientINRW netamountToSend :: " + netamountToSend);
-              clientINRW.cmd('sendfrom', userEmailAddress, userReceiverINRWAddress, parseFloat(netamountToSend),
-                minimumNumberOfConfirmation, userReceiverINRWAddress, userReceiverINRWAddress,
+              console.log("clientPLNW netamountToSend :: " + netamountToSend);
+              clientPLNW.cmd('sendfrom', userEmailAddress, userReceiverPLNWAddress, parseFloat(netamountToSend),
+                minimumNumberOfConfirmation, userReceiverPLNWAddress, userReceiverPLNWAddress,
                 function(err, TransactionDetails, resHeaders) {
                   if (err) {
-                    console.log("Error from sendFromINRWAccount:: " + err);
+                    console.log("Error from sendFromPLNWAccount:: " + err);
                     if (err.code && err.code == "ECONNREFUSED") {
                       return res.json({
-                        "message": "INRW Server Refuse to connect App",
+                        "message": "PLNW Server Refuse to connect App",
                         statusCode: 400
                       });
                     }
                     if (err.code && err.code == -5) {
                       return res.json({
-                        "message": "Invalid INRW Address",
+                        "message": "Invalid PLNW Address",
                         statusCode: 400
                       });
                     }
@@ -199,43 +200,43 @@ module.exports = {
                     }
                     if (err.code && err.code < 0) {
                       return res.json({
-                        "message": "Problem in INRW server",
+                        "message": "Problem in PLNW server",
                         statusCode: 400
                       });
                     }
                     return res.json({
-                      "message": "Error in INRW Server",
+                      "message": "Error in PLNW Server",
                       statusCode: 400
                     });
                   }
                   console.log('TransactionDetails :', TransactionDetails);
 
-                  clientINRW.cmd('gettransaction', TransactionDetails,
+                  clientPLNW.cmd('gettransaction', TransactionDetails,
                     function(err, txDetails, resHeaders) {
                       if (err) {
-                        console.log("Error from sendFromINRWAccount:: " + err);
+                        console.log("Error from sendFromPLNWAccount:: " + err);
                         return res.json({
-                          "message": "Error in INRW Server",
+                          "message": "Error in PLNW Server",
                           statusCode: 400
                         });
                       }
                       console.log('txDetails :' + txDetails);
                       var txFeeFromNode = Math.abs(txDetails.fee);
-                      var amountToMoveInCompanyAccount = transactionFeeOfINRW.minus(txFeeFromNode);
+                      var amountToMoveInCompanyAccount = transactionFeeOfPLNW.minus(txFeeFromNode);
                       console.log("Move in company Account :: " + amountToMoveInCompanyAccount);
-                      clientINRW.cmd('move', userEmailAddress, sails.config.common.companyINRWAccount, amountToMoveInCompanyAccount,
+                      clientPLNW.cmd('move', userEmailAddress, sails.config.common.companyPLNWAccount, amountToMoveInCompanyAccount,
                         function(err, moveCompanyDetails, resHeaders) {
                           if (err) {
-                            console.log("Error from sendFromINRWAccount:: " + err);
+                            console.log("Error from sendFromPLNWAccount:: " + err);
                             if (err.code && err.code == "ECONNREFUSED") {
                               return res.json({
-                                "message": "INRW Server Refuse to connect App",
+                                "message": "PLNW Server Refuse to connect App",
                                 statusCode: 400
                               });
                             }
                             if (err.code && err.code == -5) {
                               return res.json({
-                                "message": "Invalid INRW Address",
+                                "message": "Invalid PLNW Address",
                                 statusCode: 400
                               });
                             }
@@ -247,12 +248,12 @@ module.exports = {
                             }
                             if (err.code && err.code < 0) {
                               return res.json({
-                                "message": "Problem in INRW server",
+                                "message": "Problem in PLNW server",
                                 statusCode: 400
                               });
                             }
                             return res.json({
-                              "message": "Error in INRW Server",
+                              "message": "Error in PLNW Server",
                               statusCode: 400
                             });
                           }
@@ -270,8 +271,8 @@ module.exports = {
       }
     });
   },
-  getTxsListINRW: function(req, res, next) {
-    console.log("Enter into getTxsListINRW::: ");
+  getTxsListPLNW: function(req, res, next) {
+    console.log("Enter into getTxsListPLNW::: ");
     var userMailId = req.body.userMailId;
     if (!userMailId) {
       console.log("Can't be empty!!! by user.....");
@@ -297,26 +298,26 @@ module.exports = {
           statusCode: 401
         });
       }
-      clientINRW.cmd(
+      clientPLNW.cmd(
         'listtransactions',
         userMailId,
         function(err, transactionList) {
           if (err) {
-            console.log("Error from sendFromINRWAccount:: ");
+            console.log("Error from sendFromPLNWAccount:: ");
             if (err.code && err.code == "ECONNREFUSED") {
               return res.json({
-                "message": "INRW Server Refuse to connect App",
+                "message": "PLNW Server Refuse to connect App",
                 statusCode: 400
               });
             }
             if (err.code && err.code < 0) {
               return res.json({
-                "message": "Problem in INRW server",
+                "message": "Problem in PLNW server",
                 statusCode: 400
               });
             }
             return res.json({
-              "message": "Error in INRW Server",
+              "message": "Error in PLNW Server",
               statusCode: 400
             });
           }
@@ -328,8 +329,8 @@ module.exports = {
         });
     });
   },
-  getBalINRW: function(req, res, next) {
-    console.log("Enter into getBalINRW::: ");
+  getBalPLNW: function(req, res, next) {
+    console.log("Enter into getBalPLNW::: ");
     var userMailId = req.body.userMailId;
     if (!userMailId) {
       console.log("Can't be empty!!! by user.....");
@@ -354,31 +355,31 @@ module.exports = {
         });
       }
       console.log("Valid User :: " + JSON.stringify(user));
-      clientINRW.cmd(
+      clientPLNW.cmd(
         'getbalance',
         userMailId,
-        function(err, userINRWMainbalanceFromServer, resHeaders) {
+        function(err, userPLNWMainbalanceFromServer, resHeaders) {
           if (err) {
-            console.log("Error from sendFromINRWAccount:: ");
+            console.log("Error from sendFromPLNWAccount:: ");
             if (err.code && err.code == "ECONNREFUSED") {
               return res.json({
-                "message": "INRW Server Refuse to connect App",
+                "message": "PLNW Server Refuse to connect App",
                 statusCode: 400
               });
             }
             if (err.code && err.code < 0) {
               return res.json({
-                "message": "Problem in INRW server",
+                "message": "Problem in PLNW server",
                 statusCode: 400
               });
             }
             return res.json({
-              "message": "Error in INRW Server",
+              "message": "Error in PLNW Server",
               statusCode: 400
             });
           }
           return res.json({
-            balanceINRW: userINRWMainbalanceFromServer,
+            balancePLNW: userPLNWMainbalanceFromServer,
             statusCode: 200
           });
         });

@@ -43,6 +43,67 @@ module.exports = {
       type: 'boolean',
       defaultsTo: false
     },
+    isUSDWAddress: {
+      type: 'boolean',
+      defaultsTo: false
+    },
+    isEURWAddress: {
+      type: 'boolean',
+      defaultsTo: false
+    },
+    isGBPWAddress: {
+      type: 'boolean',
+      defaultsTo: false
+    },
+    isBRLWAddress: {
+      type: 'boolean',
+      defaultsTo: false
+    },
+    isPLNWAddress: {
+      type: 'boolean',
+      defaultsTo: false
+    },
+    isCADWAddress: {
+      type: 'boolean',
+      defaultsTo: false
+    },
+    isTRYWAddress: {
+      type: 'boolean',
+      defaultsTo: false
+    },
+    isRUBWAddress: {
+      type: 'boolean',
+      defaultsTo: false
+    },
+    isMXNWAddress: {
+      type: 'boolean',
+      defaultsTo: false
+    },
+    isCZKWAddress: {
+      type: 'boolean',
+      defaultsTo: false
+    },
+    isILSWAddress: {
+      type: 'boolean',
+      defaultsTo: false
+    },
+    isNZDWAddress: {
+      type: 'boolean',
+      defaultsTo: false
+    },
+    isJPYDAddress: {
+      type: 'boolean',
+      defaultsTo: false
+    },
+    isSEKWAddress: {
+      type: 'boolean',
+      defaultsTo: false
+    },
+    isAUDWAddress: {
+      type: 'boolean',
+      defaultsTo: false
+    },
+
     toJSON: function() {
       var obj = this.toObject();
       delete obj.encryptedPassword;
