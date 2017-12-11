@@ -313,7 +313,7 @@ module.exports = {
         });
       }
       if (user.verifyEmail) {
-        return res.redirect('http://bitwire.com/loginnew.php');
+        return res.redirect('http://bitwire.io/');
         // return res.json({
         //   "message": "Email already verified !!",
         //   statusCode: 401
@@ -347,7 +347,7 @@ module.exports = {
                 });
               }
               console.log("Update passoword successfully!!!");
-              return res.redirect('http://bitwire.com/loginnew.php');
+              return res.redirect('http://bitwire.io/');
               // res.json(200, {
               //   "message": "Email verified successfully",
               //   "userMailId": userMailId,
