@@ -14,7 +14,13 @@ var validator = require('validator');
 var crypto = require("crypto");
 
 var projectURL = sails.config.common.projectURL;
-
+var transporter = nodemailer.createTransport({
+  service: sails.config.common.supportEmailIdService,
+  auth: {
+    user: sails.config.common.supportEmailId,
+    pass: sails.config.common.supportEmailIdpass
+  }
+});
 module.exports = {
   createNewUser: function(req, res) {
     console.log("Enter into createNewUser :: " + req.body.email);
