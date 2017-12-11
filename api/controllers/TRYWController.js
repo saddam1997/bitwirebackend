@@ -52,19 +52,18 @@ module.exports = {
           User.update({
             email: userMailId
           }, {
-            isTRYWAddress: true
-          }, function(err, response) {
+            isINRWAddress: true
+          }).exec(function afterwards(err, updated) {
             if (err) {
               return res.json({
                 "message": "Failed to update new address in database",
                 statusCode: 401
               });
             }
-            return res.json({
-              newaddress: address,
-              statusCode: 401
-            });
-
+            // return res.json({
+            //   newaddress: address,
+            //   statusCode: 200
+            // });
           });
         }
         return res.json({

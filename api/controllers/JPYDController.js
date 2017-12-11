@@ -52,18 +52,17 @@ module.exports = {
             email: userMailId
           }, {
             isJPYDAddress: true
-          }, function(err, response) {
+          }).exec(function afterwards(err, updated) {
             if (err) {
               return res.json({
                 "message": "Failed to update new address in database",
                 statusCode: 401
               });
             }
-            return res.json({
-              newaddress: address,
-              statusCode: 401
-            });
-
+            // return res.json({
+            //   newaddress: address,
+            //   statusCode: 200
+            // });
           });
         }
         return res.json({
