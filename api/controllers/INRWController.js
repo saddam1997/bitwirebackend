@@ -15,6 +15,7 @@ var clientINRW = new bitcoinINRW.Client({
 });
 
 module.exports = {
+
   getNewINRWAddress: function(req, res) {
     var userMailId = req.body.userMailId;
     if (!userMailId) {
