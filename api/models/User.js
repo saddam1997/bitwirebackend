@@ -31,6 +31,16 @@ module.exports = {
     encryptedEmailVerificationOTP: {
       type: 'string'
     },
+    taxProofImageName: {
+      type: 'string'
+    },
+    addressProofImageName: {
+      type: 'string'
+    },
+    isKYC: {
+      type: 'boolean',
+      defaultsTo: false
+    },
     verifyEmail: {
       type: 'boolean',
       defaultsTo: false

@@ -81,5 +81,7 @@ module.exports = {
    ***************************************************************************/
 
   // environment: process.env.NODE_ENV || 'development'
-
+  paths: {
+    public: '/home/admin1/filesholder/' /// or wherever
+  }
 };
