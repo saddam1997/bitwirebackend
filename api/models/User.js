@@ -103,7 +103,11 @@ module.exports = {
       type: 'boolean',
       defaultsTo: false
     },
-
+    //INR
+    verificationDetails: {
+      collection: 'verification',
+      via: 'verificationowner'
+    },
     toJSON: function() {
       var obj = this.toObject();
       delete obj.encryptedPassword;
