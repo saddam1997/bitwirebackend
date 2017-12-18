@@ -53,7 +53,7 @@ module.exports = {
             }
             if (uploadedfiles.length == 0) {
               return res.json({
-                'message': 'Please upload addressProof',
+                'message': 'Please upload taxProofImageName',
                 statusCode: 400
               });
             } else {
