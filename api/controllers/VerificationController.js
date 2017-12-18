@@ -10,7 +10,7 @@ var filesholderpath = sails.config.common.imgegeContainer;
 
 module.exports = {
   uploadTaxProofImageImage: function(req, res) {
-    console.log("Enter into uploadAddressProofImage :: " + filesholderpath);
+    console.log("Enter into uploadTaxProofImageImage :: " + filesholderpath);
     var userId = req.param('userId');
     var taxProofImageName = req.file('taxProofImageName');
 
@@ -75,9 +75,9 @@ module.exports = {
                       statusCode: 401
                     });
                   }
-                  console.log("Update passoword successfully!!!");
+                  console.log("Your TaxProof uploadedsuccessfully!!!");
                   return res.json({
-                    "message": "Your passoword updated successfully",
+                    "message": "Your TaxProof uploaded successfully",
                     statusCode: 200
                   });
                 });
@@ -154,7 +154,7 @@ module.exports = {
                   }
                   console.log("Update passoword successfully!!!");
                   return res.json({
-                    "message": "Your passoword updated successfully",
+                    "message": "Your addressProof uploaded successfully",
                     statusCode: 200
                   });
                 });
@@ -165,7 +165,7 @@ module.exports = {
 
   },
   addVerificationDetails: function(req, res) {
-    console.log("Enter into addVerificationDetails :: " + req.body.userId);
+    console.log("Enter into addVerificationDetails :: " + JSON.stringify(req.body));
     var userId = req.body.userId;
     var firstName = req.body.firstName;
     var middleName = req.body.middleName;
@@ -184,39 +184,32 @@ module.exports = {
     var taxProofNumber = req.body.taxProofNumber;
     var addressProofType = req.body.addressProofType;
     var addressProofNumber = req.body.addressProofNumber;
-    var isAgree = req.body.isAgree;
-    var refNumber = req.body.refNumber;
-    var refAmount = req.body.refAmount;
-    var modeOfPayment = req.body.modeOfPayment;
 
-    if (!userId ||
-      !firstName ||
-      !middleName ||
-      !lastName ||
-      !addLine1 ||
-      !addLine2 ||
-      !city ||
-      !state ||
-      !country ||
-      !pincode ||
-      !mobileNumber ||
-      !bankAccountHolderName ||
-      !bankAccountNumber ||
-      !bankName ||
-      !IFSCCode ||
-      !taxProofNumber ||
-      !addressProofType ||
-      !addressProofNumber ||
-      !isAgree ||
-      !refNumber ||
-      !refAmount ||
-      !modeOfPayment) {
-      console.log("User Entered invalid parameter ");
-      return res.json({
-        "message": "Can't be empty!!!",
-        statusCode: 400
-      });
-    }
+
+    // if (!userId ||
+    //   !firstName ||
+    //   !middleName ||
+    //   !lastName ||
+    //   !addLine1 ||
+    //   !addLine2 ||
+    //   !city ||
+    //   !state ||
+    //   !country ||
+    //   !pincode ||
+    //   !mobileNumber ||
+    //   !bankAccountHolderName ||
+    //   !bankAccountNumber ||
+    //   !bankName ||
+    //   !IFSCCode ||
+    //   !taxProofNumber ||
+    //   !addressProofType ||
+    //   !addressProofNumber) {
+    //   console.log("User Entered invalid parameter ");
+    //   return res.json({
+    //     "message": "Can't be empty!!!",
+    //     statusCode: 400
+    //   });
+    // }
     User.findOne({
       id: userId
     }).exec(function(err, user) {
@@ -247,10 +240,7 @@ module.exports = {
         taxProofNumber: taxProofNumber,
         addressProofType: addressProofType,
         addressProofNumber: addressProofNumber,
-        isAgree: true,
-        refNumber: refNumber,
-        refAmount: refAmount,
-        modeOfPayment: modeOfPayment,
+        verificationStatus: 0,
         verificationowner: userId,
       };
       Verification.create(saveVerificationData).exec(function(err, finn) {
@@ -260,12 +250,25 @@ module.exports = {
             statusCode: 400
           });
         }
-        return res.json({
-          "message": 'Verification details saved successfully!!',
-          statusCode: 200
-        });
+        User.update({
+            id: userId
+          }, {
+            verificationStatus: 0
+          })
+          .exec(function(err, updatedUser) {
+            if (err) {
+              return res.json({
+                "message": "Error to update passoword!",
+                statusCode: 401
+              });
+            }
+            console.log("Update verificationStatus successfully!!!");
+            return res.json({
+              "message": 'Your application successfully submitted for review!!!',
+              statusCode: 200
+            });
+          });
       });
-
     });
   },
 };

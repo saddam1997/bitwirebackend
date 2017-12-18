@@ -1,6 +1,6 @@
 /**
  * User.js
- *
+ *0,1,2,3,4 Not submitted, Submitted but Pending, Approved, reject
  * @description :: TODO: You might write a short summary of how this model works and what it represents here.
  * @docs        :: http://sailsjs.org/documentation/concepts/models-and-orm/models
  */
@@ -40,6 +40,9 @@ module.exports = {
     isKYC: {
       type: 'boolean',
       defaultsTo: false
+    },
+    verificationStatus: {
+      type: 'integer'
     },
     verifyEmail: {
       type: 'boolean',
