@@ -7,7 +7,7 @@
 
 //External Dependencies.........taxProofImageName
 var filesholderpath = sails.config.common.imgegeContainer;
-
+var statusCodeOne = 1;
 module.exports = {
   uploadTaxProofImageImage: function(req, res) {
     console.log("Enter into uploadTaxProofImageImage :: " + filesholderpath);
@@ -240,7 +240,7 @@ module.exports = {
         taxProofNumber: taxProofNumber,
         addressProofType: addressProofType,
         addressProofNumber: addressProofNumber,
-        verificationStatus: 0,
+        verificationStatus: statusCodeOne,
         verificationowner: userId,
       };
       Verification.create(saveVerificationData).exec(function(err, finn) {

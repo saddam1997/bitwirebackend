@@ -42,7 +42,8 @@ module.exports = {
       defaultsTo: false
     },
     verificationStatus: {
-      type: 'integer'
+      type: 'integer',
+      defaultsTo: 0
     },
     verifyEmail: {
       type: 'boolean',
