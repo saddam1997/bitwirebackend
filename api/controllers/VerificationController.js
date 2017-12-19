@@ -75,7 +75,7 @@ module.exports = {
                       statusCode: 401
                     });
                   }
-                  console.log("Your TaxProof uploadedsuccessfully!!!");
+                  console.log("Your TaxProof uploaded successfully!");
                   return res.json({
                     "message": "Your TaxProof uploaded successfully",
                     statusCode: 200
@@ -152,7 +152,7 @@ module.exports = {
                       statusCode: 401
                     });
                   }
-                  console.log("Update passoword successfully!!!");
+                  console.log("Update passoword successfully!");
                   return res.json({
                     "message": "Your addressProof uploaded successfully",
                     statusCode: 200
@@ -262,7 +262,7 @@ module.exports = {
                 statusCode: 401
               });
             }
-            console.log("Update verificationStatus successfully!!!");
+            console.log("Update verificationStatus successfully!");
             return res.json({
               "message": 'Your application successfully submitted for review!!!',
               statusCode: 200
@@ -270,5 +270,34 @@ module.exports = {
           });
       });
     });
+  },
+  getVerificationDetails: function(req, res) {
+    console.log("Enter into addVerificationDetails :: " + JSON.stringify(req.body));
+    var userId = req.body.userId;
+    if (!userId) {
+      return res.json({
+        "message": "Can't be empty!!!",
+        statusCode: 400
+      });
+    }
+    User.findOne({
+        id: userId
+      }).populateAll()
+      .exec(function(err, user) {
+        if (err) {
+          return res.serverError(err);
+        }
+        if (!user) {
+          return res.json({
+            "message": "User not found!!!",
+            statusCode: 400
+          });
+        }
+        return res.json({
+          user: user,
+          statusCode: 200
+        });
+
+      });
   },
 };
