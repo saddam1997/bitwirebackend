@@ -252,7 +252,8 @@ module.exports = {
         User.update({
             id: userId
           }, {
-            verificationStatus: statusCodeOne
+            verificationStatus: statusCodeOne,
+            isKYC: true
           })
           .exec(function(err, updatedUser) {
             if (err) {
