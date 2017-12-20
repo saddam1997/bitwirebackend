@@ -240,7 +240,6 @@ module.exports = {
         taxProofNumber: taxProofNumber,
         addressProofType: addressProofType,
         addressProofNumber: addressProofNumber,
-        verificationStatus: statusCodeOne,
         verificationowner: userId,
       };
       Verification.create(saveVerificationData).exec(function(err, finn) {
@@ -253,7 +252,7 @@ module.exports = {
         User.update({
             id: userId
           }, {
-            verificationStatus: 0
+            verificationStatus: statusCodeOne
           })
           .exec(function(err, updatedUser) {
             if (err) {
