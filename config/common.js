@@ -1,13 +1,16 @@
 module.exports.common = {
 
 
-  imgegeContainer: '/home/admin1/filesholder/',
+  imgegeContainer: '/root/fileholder',
 
-  supportEmailId: 'bitwire.io@gmail.com', //Support Email Id to send mail signup and login and forgot password
-  supportEmailIdpass: 'bitwire@io', //Support Email Id passoword
+  supportEmailId: 'visionx.io@gmail.com', //Support Email Id to send mail signup and login and forgot password
+  supportEmailIdpass: 'visionx@io', //Support Email Id passoword
 
   supportEmailIdService: 'gmail',
-  projectURL: 'http://192.168.0.100:1338',
+  
+  // projectURL: 'http://192.168.0.120:1339',
+  projectURL: 'http://visionex.io:1338',
+
   txFeeBCHWithdrawSuccess: 0.0001,
   txFeeBTCWithdrawSuccess: 0.0001,
   txFeePYYWithdrawSuccess: 0.0001,

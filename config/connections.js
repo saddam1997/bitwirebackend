@@ -45,7 +45,7 @@ module.exports.connections = {
     host: 'localhost',
     user: 'root', //optional
     password: 'password', //optional
-    database: 'bitwire' //optional
+    database: 'visionx' //optional
   }
   // ,
   // memory: {
